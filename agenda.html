@@ -1,0 +1,249 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agenda - GR Pilates e Fisioterapia</title>
+    <link rel="stylesheet" href="agenda-styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo-container">
+                <h1 class="logo">GR</h1>
+                <div class="logo-text">
+                    <span>Agenda</span>
+                    <span>Pilates</span>
+                </div>
+            </div>
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                Sair
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Dashboard Cards -->
+            <div class="dashboard-cards">
+                <div class="card">
+                    <div class="card-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="card-info">
+                        <h3 id="totalAlunas">0</h3>
+                        <p>Total de Alunas</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="card-info">
+                        <h3 id="aulasHoje">0</h3>
+                        <p>Aulas Hoje</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="card-info">
+                        <h3 id="proximaAula">--:--</h3>
+                        <p>Próxima Aula</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="showModal('alunaModal')">
+                    <i class="fas fa-user-plus"></i>
+                    Nova Aluna
+                </button>
+                <button class="btn btn-secondary" onclick="showModal('agendamentoModal')">
+                    <i class="fas fa-calendar-plus"></i>
+                    Novo Agendamento
+                </button>
+                <button class="btn btn-success" onclick="enviarLembrete()">
+                    <i class="fab fa-whatsapp"></i>
+                    Enviar Lembretes
+                </button>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab-btn active" onclick="showTab('agenda')">Agenda Semanal</button>
+                <button class="tab-btn" onclick="showTab('alunas')">Alunas Cadastradas</button>
+            </div>
+
+            <!-- Agenda Tab -->
+            <div id="agendaTab" class="tab-content active">
+                <div class="agenda-container">
+                    <div class="agenda-header">
+                        <button class="week-nav" onclick="previousWeek()">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <h3 id="weekTitle">Semana Atual</h3>
+                        <button class="week-nav" onclick="nextWeek()">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    <div class="agenda-grid" id="agendaGrid">
+                        <!-- Agenda será gerada dinamicamente -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alunas Tab -->
+            <div id="alunasTab" class="tab-content">
+                <div class="search-container">
+                    <input type="text" id="searchAlunas" placeholder="Buscar aluna..." onkeyup="searchAlunas()">
+                    <i class="fas fa-search"></i>
+                </div>
+                <div class="alunas-grid" id="alunasGrid">
+                    <!-- Alunas serão listadas dinamicamente -->
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Modal Nova Aluna -->
+    <div id="alunaModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('alunaModal')">&times;</span>
+            <h3>Cadastrar Nova Aluna</h3>
+            <form id="alunaForm">
+                <div class="form-group">
+                    <label for="nomeAluna">Nome Completo</label>
+                    <input type="text" id="nomeAluna" required>
+                </div>
+                <div class="form-group">
+                    <label for="telefoneAluna">Telefone</label>
+                    <input type="tel" id="telefoneAluna" required>
+                </div>
+                <div class="form-group">
+                    <label for="emailAluna">Email (opcional)</label>
+                    <input type="email" id="emailAluna">
+                </div>
+                <div class="form-group">
+                    <label for="observacoes">Observações</label>
+                    <textarea id="observacoes" rows="3"></textarea>
+                </div>
+                <div class="form-buttons">
+                    <button type="button" onclick="closeModal('alunaModal')" class="btn btn-cancel">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Cadastrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Novo Agendamento -->
+    <div id="agendamentoModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('agendamentoModal')">&times;</span>
+            <h3>Novo Agendamento</h3>
+            <form id="agendamentoForm">
+                <div class="form-group">
+                    <label for="alunaAgendamento">Aluna</label>
+                    <select id="alunaAgendamento" required>
+                        <option value="">Selecione uma aluna</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="dataAgendamento">Data</label>
+                    <input type="date" id="dataAgendamento" required>
+                </div>
+                <div class="form-group">
+                    <label for="horaAgendamento">Horário</label>
+                    <select id="horaAgendamento" required>
+                        <option value="">Selecione um horário</option>
+                        <option value="06:00">06:00</option>
+                        <option value="07:00">07:00</option>
+                        <option value="08:00">08:00</option>
+                        <option value="09:00">09:00</option>
+                        <option value="10:00">10:00</option>
+                        <option value="11:00">11:00</option>
+                        <option value="14:00">14:00</option>
+                        <option value="15:00">15:00</option>
+                        <option value="16:00">16:00</option>
+                        <option value="17:00">17:00</option>
+                        <option value="18:00">18:00</option>
+                        <option value="19:00">19:00</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="tipoAula">Tipo de Aula</label>
+                    <select id="tipoAula" required>
+                        <option value="Individual">Individual</option>
+                        <option value="Dupla">Dupla</option>
+                        <option value="Grupo">Grupo</option>
+                    </select>
+                </div>
+                <div class="form-buttons">
+                    <button type="button" onclick="closeModal('agendamentoModal')" class="btn btn-cancel">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Agendar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Editar Agendamento -->
+    <div id="editAgendamentoModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('editAgendamentoModal')">&times;</span>
+            <h3>Editar Agendamento</h3>
+            <form id="editAgendamentoForm">
+                <input type="hidden" id="editAgendamentoId">
+                <div class="form-group">
+                    <label>Aluna</label>
+                    <input type="text" id="editAlunaName" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="editDataAgendamento">Data</label>
+                    <input type="date" id="editDataAgendamento" required>
+                </div>
+                <div class="form-group">
+                    <label for="editHoraAgendamento">Horário</label>
+                    <select id="editHoraAgendamento" required>
+                        <option value="06:00">06:00</option>
+                        <option value="07:00">07:00</option>
+                        <option value="08:00">08:00</option>
+                        <option value="09:00">09:00</option>
+                        <option value="10:00">10:00</option>
+                        <option value="11:00">11:00</option>
+                        <option value="14:00">14:00</option>
+                        <option value="15:00">15:00</option>
+                        <option value="16:00">16:00</option>
+                        <option value="17:00">17:00</option>
+                        <option value="18:00">18:00</option>
+                        <option value="19:00">19:00</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="editTipoAula">Tipo de Aula</label>
+                    <select id="editTipoAula" required>
+                        <option value="Individual">Individual</option>
+                        <option value="Dupla">Dupla</option>
+                        <option value="Grupo">Grupo</option>
+                    </select>
+                </div>
+                <div class="form-buttons">
+                    <button type="button" onclick="deleteAgendamento()" class="btn btn-danger">Excluir</button>
+                    <button type="button" onclick="closeModal('editAgendamentoModal')" class="btn btn-cancel">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="agenda-script.js"></script>
+</body>
+</html>
